@@ -142,11 +142,6 @@ def download_file( service, drive_file, dest_path ):
             return False
         if resp.status == 200:
             try:
-                print drive_file['id']
-                print dest_path
-                print drive_file['title']
-                print drive_file['modifiedDate']
-                print len(content)
                 fmanager.save_file(drive_file['id'], dest_path, drive_file['title'], drive_file['modifiedDate'], content)
             except:
                 log( "Failed to write file: %s" % file_location )
