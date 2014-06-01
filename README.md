@@ -1,11 +1,13 @@
 Google Drive Backup
 ===================
 
-A python script to sync your google drive contents.
+A python script to incrementally backup your google drive contents.
 
 ## Features
 * You can Download your entire google drive or any given folder
 * Downloads a file only if it has been modified since last download
+* Zips file to reduce disk space
+* Keeps copies of previously downloaded versions
 * Logs all actions (optional)
 * Uses OAuth2 authentication and can remember authentication
 
