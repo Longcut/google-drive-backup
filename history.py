@@ -29,7 +29,6 @@ def set_destination(dest='downloaded/'):
     global DOWNLOAD_ROOT
     DOWNLOAD_ROOT = dest
     DOWNLOAD_FOLDER = dest + TIMESTAMP + '/'
-    ensure_dir(DOWNLOAD_FOLDER)
 
 def is_file_modified( file_id, modified_date ):
     ensure_db()
@@ -39,6 +38,7 @@ def is_file_modified( file_id, modified_date ):
     return not result or result[0][0] < modified_date
 
 def save_file(file_id, folder, file_name, modified_date ,content):
+    ensure_dir(DOWNLOAD_FOLDER)
     zipname = DOWNLOAD_FOLDER + file_id + '.zip'
     outzipfile = zipfile.ZipFile(open(zipname,'w'), mode="w")
     outzipfile.writestr(file_name, content)
