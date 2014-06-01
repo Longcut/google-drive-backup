@@ -20,6 +20,8 @@ __author__ = 'viky.nandha@gmail.com (Vignesh Nandha Kumar)'
 import gflags, httplib2, logging, os, pprint, sys, re, time
 import pprint
 
+import history
+
 from apiclient.discovery import build
 from oauth2client.file import Storage
 from oauth2client.client import AccessTokenRefreshError, flow_from_clientsecrets
@@ -75,23 +77,10 @@ def open_logfile():
 def log(str):
     LOG_FILE.write( (str + '\n').encode('utf8') )
 
-def ensure_dir(directory):
-    if not os.path.exists(directory):
-        log( "Creating directory: %s" % directory )
-        os.makedirs(directory)
-
 def is_google_doc(drive_file):
     return True if re.match( '^application/vnd\.google-apps\..+', drive_file['mimeType'] ) else False
 
-def is_file_modified(drive_file, local_file):
-    if os.path.exists( local_file ):
-        rtime = time.mktime( time.strptime( drive_file['modifiedDate'], '%Y-%m-%dT%H:%M:%S.%fZ' ) )
-        ltime = os.path.getmtime( local_file )
-        return rtime > ltime
-    else:
-        return True
-
-def get_folder_contents( service, http, folder, base_path='./', depth=0 ):
+def get_folder_contents( service, http, folder, base_path='', depth=0 ):
     if FLAGS.debug:
         log( "\n" + '  ' * depth + "Getting contents of folder %s" % folder['title'] )
     try:
@@ -116,17 +105,11 @@ def get_folder_contents( service, http, folder, base_path='./', depth=0 ):
             else:
                 log( '  ' * depth + "-- " + item['title'] )
 
-    ensure_dir( dest_path )
-
     for item in filter(is_file, folder_contents):
         full_path = dest_path + item['title'].replace( '/', '_' )
-        if is_file_modified( item, full_path ):
-            is_file_new = not os.path.exists( full_path )
+        if history.is_file_modified( item['id'], item['modifiedDate'] ):
             if download_file( service, item, dest_path ):
-                if is_file_new:
-                    log( "Created %s" % full_path )
-                else:
-                    log( "Updated %s" % full_path )
+                    log( "Downloaded %s" % full_path )
             else:
                 log( "ERROR while saving %s" % full_path )
 
@@ -159,11 +142,15 @@ def download_file( service, drive_file, dest_path ):
             return False
         if resp.status == 200:
             try:
-                target = open( file_location, 'w+' )
+                print drive_file['id']
+                print dest_path
+                print drive_file['title']
+                print drive_file['modifiedDate']
+                print len(content)
+                history.save_file(drive_file['id'], dest_path, drive_file['title'], drive_file['modifiedDate'], content)
             except:
-                log( "Could not open file %s for writing. Please check permissions." % file_location )
+                log( "Failed to write file: %s" % file_location )
                 return False
-            target.write( content )
             return True
         else:
             log( 'An error occurred: %s' % resp )
@@ -201,10 +188,17 @@ def main(argv):
     service = build("drive", "v2", http=http)
 
     open_logfile()
+    
+    try:
+        history.set_destination(FLAGS.destination)
+    except:
+        print ( "Could not write to directory %s. Please check permissions." % FLAGS.destination )
+        exit(1)
 
     try:
         start_folder = service.files().get( fileId=FLAGS.drive_id ).execute()
-        get_folder_contents( service, http, start_folder, FLAGS.destination )
+        get_folder_contents( service, http, start_folder )
+        history.close_db()
     except AccessTokenRefreshError:
         print ("The credentials have been revoked or expired, please re-run"
                "the application to re-authorize")
