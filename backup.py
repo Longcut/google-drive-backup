@@ -1,4 +1,4 @@
-"""Simple command-line sample for the Google Drive API.
+"""Simple command-line sample incremental backup for Google Drive.
 
 Command-line application that retrieves the list of files in google drive.
 

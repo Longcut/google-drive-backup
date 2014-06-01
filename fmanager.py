@@ -50,3 +50,21 @@ def save_file(file_id, folder, file_name, modified_date ,content):
     cur.close()
     HISTORY_DB.commit()
     return True
+
+def get_copies_list ( file_id="", file_name="", folder="" ):
+    if not (file_id or file_name or folder):
+        return []
+    qry_parameters = []
+    if file_id:
+        qry_parameters.append(" file_id='%s'" % file_id)
+    if file_name:
+        qry_parameters.append(" file_name='%s'" % file_name)
+    if folder:
+        qry_parameters.append(" folder='%s'" % folder)
+    qry = "SELECT * FROM downloads WHERE%s;" % (' AND'.join(qry_parameters))
+    ensure_db()
+    cur = HISTORY_DB.cursor()
+    results = cur.execute(qry).fetchall()
+    cur.close()
+    return results
+
