@@ -10,6 +10,7 @@ A python script to incrementally backup your google drive contents.
 * Keeps copies of previously downloaded versions
 * Logs all actions (optional)
 * Uses OAuth2 authentication and can remember authentication
+* List backup copies of a specific file or folder
 
 ## Requirements
 * Google API Python library. To install run
@@ -22,7 +23,7 @@ A python script to incrementally backup your google drive contents.
 * Now, if you run `python backup.py`, a browser window/tab will open for you to authenticate the script.
 * Once authentication is done, the script will start downloading your *My Drive*. Refer the next section for more options.
 
-## Options
+## Options for backup.py
 Following command line options are available.
 
 **--destination** - Path to the folder where the files have to be downloaded to. If not specified, a folder named `downloaded` is created in the current directory.
@@ -32,3 +33,17 @@ Following command line options are available.
 **--logfile** - Path to the file to which the logs should be written to. By default, writes to `backup.log` in the current directory. The file will be overwritten every time the script is run.
 
 **--drive_id** ID of the folder which you want to download. By default, entire "My Drive" is downloaded.
+
+## Options for recover.py
+Following command line options are available.
+
+**--destination** - Path to the folder where the files were downloaded to. If not specified, a folder named `downloaded` is used.
+
+**--file_id** ID of the file which you want to recover.
+
+**--file_name** Exact file name of the file you want to recover.
+
+**--folder** Exact name of the folder you want to recover.
+
+
+
