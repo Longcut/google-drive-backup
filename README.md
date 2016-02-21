@@ -16,6 +16,8 @@ A python script to incrementally backup your google drive contents.
 * Google API Python library. To install run
 `pip install --upgrade google-api-python-client` or
 `easy_install --upgrade google-api-python-client`
+* sqlite3
+`pip install --upgrade sqlite3`
 
 ## Setup
 * Edit `client_secrets_sample.json` and add your Google API client id and client secret (If you don't have one, [get it here](https://code.google.com/apis/console/)).
